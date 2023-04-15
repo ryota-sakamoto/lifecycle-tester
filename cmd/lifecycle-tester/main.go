@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"golang.org/x/exp/slog"
@@ -42,6 +43,13 @@ func main() {
 	<-ctx.Done()
 
 	slog.Info("stopping http server")
+	if sm.GetState().ShutdownDelaySeconds > 0 {
+		slog.Info("delaying shutdown",
+			slog.Int64("shutdown_delay_seconds", sm.GetState().ShutdownDelaySeconds),
+		)
+		time.Sleep(time.Second * time.Duration(sm.GetState().ShutdownDelaySeconds))
+	}
+
 	if err := server.Shutdown(context.Background()); err != nil {
 		panic(err)
 	}

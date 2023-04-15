@@ -13,22 +13,21 @@ The application provides the following endpoints:
 
 ## State
 
-The application maintains a simple state:
+The server's state is controlled by a JSON payload sent to the `POST /` endpoint. The state object has the following fields:
 
-```json
-{
-  "is_failed_healthz": false
-}
-```
-
-- `is_failed_healthz`: Determines whether the `/healthz` endpoint should indicate a failure.
+- `is_failed_healthz` (bool): If set to `true`, the server will fail health checks at the `/healthz` endpoint.
+- `shutdown_delay_seconds` (int64): The number of seconds to delay the server shutdown process after receiving a shutdown signal.
 
 ## Usage
 
-To update the state, send a POST request to the / endpoint with the desired state in JSON format:
+This request will return the server information, including the hostname, request details, and current state.
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"is_failed_healthz": true}' http://localhost:8080/
+curl http://localhost:8080
 ```
 
-This command sets the `is_failed_healthz` state to true, causing the `/healthz` endpoint to return an HTTP 503 status code.
+This request will set `is_failed_healthz` to `true`, causing the server to fail health checks, and `shutdown_delay_seconds` to 30, causing the server to delay the shutdown process by 30 seconds after receiving a shutdown signal.
+
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{"is_failed_healthz": true, "shutdown_delay_seconds": 30}' http://localhost:8080
+```
