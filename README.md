@@ -21,7 +21,7 @@ The application maintains a simple state:
 }
 ```
 
-- `is_failed_healthz`: Determines whether the /healthz endpoint should indicate a failure.
+- `is_failed_healthz`: Determines whether the `/healthz` endpoint should indicate a failure.
 
 ## Usage
 
