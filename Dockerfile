@@ -10,4 +10,4 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o lifecycle-tester cmd/lifecycle-tester/m
 FROM scratch
 COPY --from=builder /app/lifecycle-tester /lifecycle-tester
 EXPOSE 8080
-ENTRYPOINT ["/lifecycle-tester"]
+CMD ["/lifecycle-tester", "server"]

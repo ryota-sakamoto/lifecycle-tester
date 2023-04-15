@@ -36,5 +36,5 @@ spec:
         lifecycle:
           preStop:
             exec:
-              command: ["/lifecycle-tester", "--sleep", "10"]
+              command: ["/lifecycle-tester", "sleep", "10"]
       terminationGracePeriodSeconds: 60
