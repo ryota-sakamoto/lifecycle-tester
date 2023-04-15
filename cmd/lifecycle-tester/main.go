@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"net/http"
 	"os"
 	"os/signal"
@@ -16,6 +17,14 @@ import (
 )
 
 func main() {
+	sleep := flag.Int64("sleep", 0, "If defined, sleep instead of running http server")
+	flag.Parse()
+
+	if *sleep > 0 {
+		time.Sleep(time.Second * time.Duration(*sleep))
+		os.Exit(0)
+	}
+
 	sm := state.NewStateManager()
 	sm.SetState(state.State{
 		IsFailedReadiness:    false,
