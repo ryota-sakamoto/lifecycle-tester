@@ -5,7 +5,8 @@ import (
 )
 
 type State struct {
-	IsFailedHealthz      bool  `json:"is_failed_healthz"`
+	IsFailedReadiness    bool  `json:"is_failed_readiness"`
+	IsFailedLiveness     bool  `json:"is_failed_liveness"`
 	ShutdownDelaySeconds int64 `json:"shutdown_delay_seconds"`
 }
 

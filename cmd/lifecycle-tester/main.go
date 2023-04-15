@@ -18,7 +18,8 @@ import (
 func main() {
 	sm := state.NewStateManager()
 	sm.SetState(state.State{
-		IsFailedHealthz:      false,
+		IsFailedReadiness:    false,
+		IsFailedLiveness:     false,
 		ShutdownDelaySeconds: 10,
 	})
 
@@ -27,7 +28,8 @@ func main() {
 
 	mux.Get("/", handler.GetIndex(sm))
 	mux.Post("/", handler.PostIndex(sm))
-	mux.Get("/healthz", handler.Healthz(sm))
+	mux.Get("/readiness", handler.Readiness(sm))
+	mux.Get("/liveness", handler.Liveness(sm))
 
 	server := http.Server{
 		Addr:    ":8080",

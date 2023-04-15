@@ -6,9 +6,9 @@ import (
 	"github.com/ryota-sakamoto/lifecycle-tester/internal/state"
 )
 
-func Healthz(sm *state.StateManager) http.HandlerFunc {
+func Readiness(sm *state.StateManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if sm.GetState().IsFailedHealthz {
+		if sm.GetState().IsFailedReadiness {
 			w.WriteHeader(http.StatusServiceUnavailable)
 		}
 	}
