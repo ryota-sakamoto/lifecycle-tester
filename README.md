@@ -1,4 +1,4 @@
-lifecycle-tester
+Lifecycle Tester
 ---
 
 Lifecycle Tester is a lightweight web application designed to test the feature in Kubernetes deployments. It can be used in a container to simulate different application states and observe how Kubernetes behaves when the application is not considered "ready".
