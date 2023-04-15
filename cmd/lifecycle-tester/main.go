@@ -14,12 +14,14 @@ import (
 )
 
 func main() {
+	sm := handler.NewStateManager()
+
 	mux := chi.NewRouter()
 	mux.Use(middleware.Logging)
 
-	mux.Get("/", handler.GetIndex)
-	mux.Post("/", handler.PostIndex)
-	mux.Get("/healthz", handler.Healthz)
+	mux.Get("/", handler.GetIndex(sm))
+	mux.Post("/", handler.PostIndex(sm))
+	mux.Get("/healthz", handler.Healthz(sm))
 
 	server := http.Server{
 		Addr:    ":8080",

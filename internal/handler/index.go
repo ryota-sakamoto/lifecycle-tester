@@ -23,14 +23,16 @@ type HTTPRequest struct {
 	RemoteAddr string      `json:"remote_addr"`
 }
 
-func GetIndex(w http.ResponseWriter, r *http.Request) {
+func GetIndex(sm *StateManager) http.HandlerFunc {
 	hostname, _ := os.Hostname()
 
-	render.JSON(w, r, Response{
-		Hostname: hostname,
-		Request:  PickRequest(r),
-		State:    state,
-	})
+	return func(w http.ResponseWriter, r *http.Request) {
+		render.JSON(w, r, Response{
+			Hostname: hostname,
+			Request:  PickRequest(r),
+			State:    sm.GetState(),
+		})
+	}
 }
 
 func PickRequest(r *http.Request) HTTPRequest {
@@ -43,18 +45,20 @@ func PickRequest(r *http.Request) HTTPRequest {
 	}
 }
 
-func PostIndex(w http.ResponseWriter, r *http.Request) {
-	var stateReq State
-	if err := json.NewDecoder(r.Body).Decode(&stateReq); err != nil {
-		slog.Warn("failed to parse state request",
-			slog.Any("err", err),
-		)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+func PostIndex(sm *StateManager) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var stateReq State
+		if err := json.NewDecoder(r.Body).Decode(&stateReq); err != nil {
+			slog.Warn("failed to parse state request",
+				slog.Any("err", err),
+			)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 
-	slog.Info("state change",
-		slog.Any("state", stateReq),
-	)
-	state = stateReq
+		slog.Info("state change",
+			slog.Any("state", stateReq),
+		)
+		sm.SetState(stateReq)
+	}
 }

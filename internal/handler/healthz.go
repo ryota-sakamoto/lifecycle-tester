@@ -4,8 +4,10 @@ import (
 	"net/http"
 )
 
-func Healthz(w http.ResponseWriter, r *http.Request) {
-	if state.IsFailedHealthz {
-		w.WriteHeader(http.StatusServiceUnavailable)
+func Healthz(sm *StateManager) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if sm.GetState().IsFailedHealthz {
+			w.WriteHeader(http.StatusServiceUnavailable)
+		}
 	}
 }
