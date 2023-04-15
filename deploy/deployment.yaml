@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: lifecycle-tester
+  name: lifecycle-tester
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lifecycle-tester
+  template:
+    metadata:
+      labels:
+        app: lifecycle-tester
+    spec:
+      containers:
+      - name: lifecycle-tester
+        image: ghcr.io/ryota-sakamoto/lifecycle-tester:latest
+        ports:
+        - name: http
+          containerPort: 8080
+        readinessProbe:
+          httpGet:
+            port: http
+            path: /readiness
+          failureThreshold: 3
+          periodSeconds: 1
+        livenessProbe:
+          httpGet:
+            port: http
+            path: /liveness
+          failureThreshold: 3
+          periodSeconds: 1
+          terminationGracePeriodSeconds: 30
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/lifecycle-tester", "--sleep", "10"]
+      terminationGracePeriodSeconds: 60
