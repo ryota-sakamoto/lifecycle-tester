@@ -12,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"golang.org/x/exp/slog"
 
+	"github.com/ryota-sakamoto/lifecycle-tester/internal/config"
 	"github.com/ryota-sakamoto/lifecycle-tester/internal/handler"
 	"github.com/ryota-sakamoto/lifecycle-tester/internal/middleware"
 	"github.com/ryota-sakamoto/lifecycle-tester/internal/state"
@@ -26,6 +27,11 @@ func main() {
 		os.Exit(0)
 	}
 
+	c, err := config.GetConfig()
+	if err != nil {
+		panic(err)
+	}
+
 	sm := state.NewStateManager()
 	sm.SetState(state.State{
 		IsFailedReadiness:    false,
@@ -34,7 +40,7 @@ func main() {
 	})
 
 	mux := chi.NewRouter()
-	mux.Use(middleware.Logging)
+	mux.Use(middleware.Logging(c.EnableHealthLog))
 
 	mux.Get("/", handler.GetIndex(sm))
 	mux.Post("/", handler.PostIndex(sm))

@@ -19,20 +19,26 @@ func (s *statusResponseWriter) WriteHeader(statusCode int) {
 	s.ResponseWriter.WriteHeader(statusCode)
 }
 
-func Logging(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		s := &statusResponseWriter{
-			ResponseWriter: w,
-			statusCode:     http.StatusOK,
-		}
-		h.ServeHTTP(s, r)
+func Logging(enableHealthLog bool) func(h http.Handler) http.Handler {
+	return func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+			s := &statusResponseWriter{
+				ResponseWriter: w,
+				statusCode:     http.StatusOK,
+			}
+			h.ServeHTTP(s, r)
 
-		elapsed := time.Since(start)
-		slog.Info("access log",
-			slog.Int("status", s.statusCode),
-			slog.String("elapsed", elapsed.String()),
-			slog.Any("request", handler.PickRequest(r)),
-		)
-	})
+			if !enableHealthLog && (r.RequestURI == "/readiness" || r.RequestURI == "/liveness") {
+				return
+			}
+
+			elapsed := time.Since(start)
+			slog.Info("access log",
+				slog.Int("status", s.statusCode),
+				slog.String("elapsed", elapsed.String()),
+				slog.Any("request", handler.PickRequest(r)),
+			)
+		})
+	}
 }
