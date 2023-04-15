@@ -7,12 +7,14 @@ import (
 
 	"github.com/go-chi/render"
 	"golang.org/x/exp/slog"
+
+	"github.com/ryota-sakamoto/lifecycle-tester/internal/state"
 )
 
 type Response struct {
 	Hostname string      `json:"hostname"`
 	Request  HTTPRequest `json:"request"`
-	State    State       `json:"state"`
+	State    state.State `json:"state"`
 }
 
 type HTTPRequest struct {
@@ -23,7 +25,7 @@ type HTTPRequest struct {
 	RemoteAddr string      `json:"remote_addr"`
 }
 
-func GetIndex(sm *StateManager) http.HandlerFunc {
+func GetIndex(sm *state.StateManager) http.HandlerFunc {
 	hostname, _ := os.Hostname()
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -45,9 +47,9 @@ func PickRequest(r *http.Request) HTTPRequest {
 	}
 }
 
-func PostIndex(sm *StateManager) http.HandlerFunc {
+func PostIndex(sm *state.StateManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var stateReq State
+		var stateReq state.State
 		if err := json.NewDecoder(r.Body).Decode(&stateReq); err != nil {
 			slog.Warn("failed to parse state request",
 				slog.Any("err", err),

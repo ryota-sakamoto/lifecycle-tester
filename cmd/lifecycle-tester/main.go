@@ -12,10 +12,15 @@ import (
 
 	"github.com/ryota-sakamoto/lifecycle-tester/internal/handler"
 	"github.com/ryota-sakamoto/lifecycle-tester/internal/middleware"
+	"github.com/ryota-sakamoto/lifecycle-tester/internal/state"
 )
 
 func main() {
-	sm := handler.NewStateManager()
+	sm := state.NewStateManager()
+	sm.SetState(state.State{
+		IsFailedHealthz:      false,
+		ShutdownDelaySeconds: 10,
+	})
 
 	mux := chi.NewRouter()
 	mux.Use(middleware.Logging)
