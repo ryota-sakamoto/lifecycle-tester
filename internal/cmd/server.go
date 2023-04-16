@@ -41,10 +41,18 @@ func runServer(cmd *cobra.Command, args []string) {
 
 	sm := state.NewStateManager()
 	sm.SetState(state.State{
-		IsFailedReadiness:    false,
+		IsFailedReadiness:    c.ReadinessDelaySeconds > 0,
 		IsFailedLiveness:     false,
 		ShutdownDelaySeconds: c.ShutdownDelaySeconds,
 	})
+	if c.ReadinessDelaySeconds > 0 {
+		go func() {
+			time.Sleep(time.Second * time.Duration(c.ReadinessDelaySeconds))
+			current := sm.GetState()
+			current.IsFailedReadiness = false
+			sm.SetState(current)
+		}()
+	}
 
 	mux := chi.NewRouter()
 	mux.Use(middleware.Logging(c.EnableHealthLog))
