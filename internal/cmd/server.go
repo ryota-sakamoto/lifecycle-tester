@@ -34,11 +34,16 @@ func runServer(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout)))
+	slog.Info("start http server",
+		slog.Any("config", c),
+	)
+
 	sm := state.NewStateManager()
 	sm.SetState(state.State{
 		IsFailedReadiness:    false,
 		IsFailedLiveness:     false,
-		ShutdownDelaySeconds: 10,
+		ShutdownDelaySeconds: c.ShutdownDelaySeconds,
 	})
 
 	mux := chi.NewRouter()
@@ -54,10 +59,8 @@ func runServer(cmd *cobra.Command, args []string) {
 		Handler: mux,
 	}
 
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout)))
-
 	go func() {
-		slog.Info("start http server")
+		slog.Info("starting http server")
 		if err := server.ListenAndServe(); err != http.ErrServerClosed {
 			panic(err)
 		}

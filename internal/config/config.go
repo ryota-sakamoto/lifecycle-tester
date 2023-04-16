@@ -5,7 +5,8 @@ import (
 )
 
 type Config struct {
-	EnableHealthLog bool `envconfig:"ENABLE_HEALTH_LOG" default:"true"`
+	EnableHealthLog      bool  `envconfig:"ENABLE_HEALTH_LOG" default:"true"`
+	ShutdownDelaySeconds int64 `envconfig:"SHUTDOWN_DELAY_SECONDS" default:"0"`
 }
 
 func GetConfig() (*Config, error) {

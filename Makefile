@@ -1,2 +1,2 @@
 dev:
-	go run cmd/lifecycle-tester/main.go
+	go run cmd/lifecycle-tester/main.go server

@@ -20,6 +20,11 @@ spec:
         ports:
         - name: http
           containerPort: 8080
+        env:
+        - name: ENABLE_HEALTH_LOG
+          value: "true"
+        - name: SHUTDOWN_DELAY_SECONDS
+          value: "10"
         readinessProbe:
           httpGet:
             port: http
