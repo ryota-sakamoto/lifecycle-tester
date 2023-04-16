@@ -42,7 +42,7 @@ func runServer(cmd *cobra.Command, args []string) {
 	sm := state.NewStateManager()
 	sm.SetState(state.State{
 		IsFailedReadiness:    c.ReadinessDelaySeconds > 0,
-		IsFailedLiveness:     false,
+		IsFailedLiveness:     c.LivenessDelaySeconds > 0,
 		ShutdownDelaySeconds: c.ShutdownDelaySeconds,
 	})
 	if c.ReadinessDelaySeconds > 0 {
@@ -50,6 +50,14 @@ func runServer(cmd *cobra.Command, args []string) {
 			time.Sleep(time.Second * time.Duration(c.ReadinessDelaySeconds))
 			current := sm.GetState()
 			current.IsFailedReadiness = false
+			sm.SetState(current)
+		}()
+	}
+	if c.LivenessDelaySeconds > 0 {
+		go func() {
+			time.Sleep(time.Second * time.Duration(c.LivenessDelaySeconds))
+			current := sm.GetState()
+			current.IsFailedLiveness = false
 			sm.SetState(current)
 		}()
 	}
