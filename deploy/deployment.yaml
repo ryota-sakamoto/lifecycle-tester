@@ -25,6 +25,8 @@ spec:
           value: "true"
         - name: SHUTDOWN_DELAY_SECONDS
           value: "10"
+        - name: READINESS_DELAY_SECONDS
+          value: "10"
         readinessProbe:
           httpGet:
             port: http
