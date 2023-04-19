@@ -13,7 +13,10 @@ func init() {
 
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "lifecycle-tester",
+		Use:   "lifecycle-tester [command]",
+		Short: "A CLI tool for testing container lifecycle events",
+		Long: `lifecycle-tester is a CLI tool designed to help test container lifecycle events, such as
+readiness and liveness probes. It provides various subcommands for different functionalities.`,
 		Run: runHelp,
 	}
 	cmd.AddCommand(NewSleepCommand())

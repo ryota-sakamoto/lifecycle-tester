@@ -21,8 +21,10 @@ import (
 func NewServerCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "server",
-		Short: "Run http server",
-		Run:   runServer,
+		Short: "Run the HTTP server",
+		Long: `The 'server' subcommand starts an HTTP server to provide an interface for
+updating the application's state and handling container lifecycle events.`,
+		Run: runServer,
 	}
 
 	return cmd

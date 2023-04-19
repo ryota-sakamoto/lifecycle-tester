@@ -11,8 +11,10 @@ import (
 
 func NewSleepCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "sleep [seconds|infinity]",
-		Short: "Sleep for a specified number of seconds or indefinitely",
+		Use:   "sleep [seconds]",
+		Short: "Sleep for a specified duration",
+		Long: `The 'sleep' subcommand allows you to make the application sleep for a specified
+duration in seconds or indefinitely using the 'infinity' keyword.`,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if err := cobra.ExactArgs(1)(cmd, args); err != nil {
 				return err
