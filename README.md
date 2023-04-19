@@ -22,14 +22,54 @@ The server's state is controlled by a JSON payload sent to the `POST /` endpoint
 
 ## Usage
 
+### Web API
+
 This request will return the server information, including the hostname, request details, and current state.
 
 ```bash
 curl http://localhost:8080
 ```
 
-This request will set `is_failed_liveness` to `true`, causing the server to fail health checks, and `shutdown_delay_seconds` to 30, causing the server to delay the shutdown process by 30 seconds after receiving a shutdown signal.
+This request will set is_failed_liveness to true, causing the server to fail health checks, and shutdown_delay_seconds to 30, causing the server to delay the shutdown process by 30 seconds after receiving a shutdown signal.
 
-```bash
+```
 curl -X POST -H "Content-Type: application/json" -d '{"is_failed_liveness": true, "shutdown_delay_seconds": 30}' http://localhost:8080
+```
+
+### CLI Usage
+
+The CLI tool provides various subcommands for different functionalities:
+
+- `server`: Start the HTTP server to provide an interface for updating the application's state and handling container lifecycle events.
+- `state`: Update the application's state, such as changing the status of readiness and liveness probes.
+- `sleep`: Make the application sleep for a specified duration in seconds or indefinitely using the 'infinity' keyword.
+
+#### Server
+
+This command will start the HTTP server.
+
+```
+lifecycle-tester server
+```
+
+#### State
+
+This command will set `is_failed_readiness` to `true`, causing the server to fail health checks at the `/readiness` endpoint, and `shutdown_delay_seconds` to 30, causing the server to delay the shutdown process by 30 seconds after receiving a shutdown signal.
+
+```
+lifecycle-tester state --is-failed-readiness=true --shutdown-delay-seconds=30
+```
+
+#### Sleep
+
+This command will make the application sleep for 10 seconds.
+
+```
+lifecycle-tester sleep 10
+```
+
+This command will make the application sleep indefinitely.
+
+```
+lifecycle-tester sleep infinity
 ```
