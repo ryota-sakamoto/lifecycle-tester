@@ -19,7 +19,7 @@ func (s *statusResponseWriter) WriteHeader(statusCode int) {
 	s.ResponseWriter.WriteHeader(statusCode)
 }
 
-func Logging(enableHealthLog bool) func(h http.Handler) http.Handler {
+func Logging(disableHealthLog bool) func(h http.Handler) http.Handler {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
@@ -29,7 +29,7 @@ func Logging(enableHealthLog bool) func(h http.Handler) http.Handler {
 			}
 			h.ServeHTTP(s, r)
 
-			if !enableHealthLog && (r.RequestURI == "/readiness" || r.RequestURI == "/liveness") {
+			if disableHealthLog && (r.RequestURI == "/readiness" || r.RequestURI == "/liveness") {
 				return
 			}
 

@@ -63,7 +63,7 @@ func runServer(cmd *cobra.Command, args []string) {
 	}
 
 	mux := chi.NewRouter()
-	mux.Use(middleware.Logging(c.EnableHealthLog))
+	mux.Use(middleware.Logging(c.DisableHealthLog))
 
 	mux.Get("/", handler.GetIndex(sm))
 	mux.Post("/", handler.PostIndex(sm))

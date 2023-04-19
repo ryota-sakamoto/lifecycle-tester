@@ -21,8 +21,8 @@ spec:
         - name: http
           containerPort: 8080
         env:
-        - name: ENABLE_HEALTH_LOG
-          value: "true"
+        - name: DISABLE_HEALTH_LOG
+          value: "false"
         - name: SHUTDOWN_DELAY_SECONDS
           value: "10"
         - name: READINESS_DELAY_SECONDS
