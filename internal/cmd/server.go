@@ -34,7 +34,6 @@ func runServer(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout)))
 	slog.Info("start http server",
 		slog.Any("config", c),
 	)

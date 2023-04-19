@@ -1,8 +1,15 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slog"
 )
+
+func init() {
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout)))
+}
 
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
@@ -11,6 +18,7 @@ func NewCommand() *cobra.Command {
 	}
 	cmd.AddCommand(NewSleepCommand())
 	cmd.AddCommand(NewServerCommand())
+	cmd.AddCommand(NewStateCommand())
 
 	return cmd
 }
