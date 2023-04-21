@@ -20,6 +20,17 @@ The server's state is controlled by a JSON payload sent to the `POST /` endpoint
 - `is_failed_liveness` (bool): If set to `true`, the server will fail health checks at the `/liveness` endpoint.
 - `shutdown_delay_seconds` (int64): The number of seconds to delay the server shutdown process after receiving a shutdown signal.
 
+## Environment Variables
+
+The Lifecycle Tester application can be configured using the following environment variables:
+
+| Environment Variable      | Description                                                          | Default |
+|---------------------------|----------------------------------------------------------------------|---------|
+| DISABLE_HEALTH_LOG        | Set to "true" to disable logging of health check requests            | "false" |
+| SHUTDOWN_DELAY_SECONDS    | Number of seconds to delay the server shutdown process after receiving a shutdown signal | "0" |
+| READINESS_DELAY_SECONDS   | Number of seconds to delay the server readiness state                | "0" |
+| LIVENESS_DELAY_SECONDS    | Number of seconds to delay the server liveness state                 | "0" |
+
 ## Usage
 
 ### Web API
