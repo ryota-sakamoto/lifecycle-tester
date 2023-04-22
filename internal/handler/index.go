@@ -27,7 +27,7 @@ type HTTPRequest struct {
 }
 
 func Index(mux *chi.Mux, sm *state.StateManager) {
-	mux.Get("/", getIndex(sm))
+	mux.Handle("/*", getIndex(sm))
 	mux.Post("/", postIndex(sm))
 }
 

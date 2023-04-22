@@ -24,11 +24,15 @@ func TestGetIndex(t *testing.T) {
 	tt := []struct {
 		name     string
 		state    *state.State
+		method   string
+		path     string
 		expected func(*http.Response, BodyType) BodyType
 	}{
 		{
-			name:  "normal",
-			state: nil,
+			name:   "normal",
+			state:  nil,
+			method: http.MethodGet,
+			path:   "/",
 			expected: func(res *http.Response, body BodyType) BodyType {
 				return BodyType{
 					Hostname: hostname,
@@ -57,6 +61,8 @@ func TestGetIndex(t *testing.T) {
 				IsFailedLiveness:     false,
 				ShutdownDelaySeconds: 10,
 			},
+			method: http.MethodGet,
+			path:   "/",
 			expected: func(res *http.Response, body BodyType) BodyType {
 				return BodyType{
 					Hostname: hostname,
@@ -78,6 +84,33 @@ func TestGetIndex(t *testing.T) {
 				}
 			},
 		},
+		{
+			name:   "change path",
+			state:  nil,
+			method: http.MethodPost,
+			path:   "/hoge",
+			expected: func(res *http.Response, body BodyType) BodyType {
+				return BodyType{
+					Hostname: hostname,
+					Request: map[string]interface{}{
+						"header": map[string]interface{}{
+							"Accept-Encoding": []interface{}{"gzip"},
+							"User-Agent":      []interface{}{"Go-http-client/1.1"},
+							"Content-Length":  []interface{}{"0"},
+						},
+						"host":        res.Request.Host,
+						"method":      "POST",
+						"remote_addr": body.Request["remote_addr"],
+						"request_uri": "/hoge",
+					},
+					State: state.State{
+						IsFailedReadiness:    false,
+						IsFailedLiveness:     false,
+						ShutdownDelaySeconds: 0,
+					},
+				}
+			},
+		},
 	}
 
 	for _, data := range tt {
@@ -90,7 +123,7 @@ func TestGetIndex(t *testing.T) {
 			server := setupTestServer(sm)
 			defer server.Close()
 
-			req, err := http.NewRequest(http.MethodGet, server.URL, nil)
+			req, err := http.NewRequest(data.method, server.URL+data.path, nil)
 			assert.NoError(t, err)
 
 			res, err := http.DefaultClient.Do(req)
