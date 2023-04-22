@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slog"
 
@@ -67,7 +68,6 @@ func runServer(cmd *cobra.Command, args []string) {
 	mux.Use(middleware.Logging(c.DisableHealthLog))
 
 	handler.Index(mux, sm)
-	handler.Metrics(mux, sm)
 	handler.Readiness(mux, sm)
 	handler.Liveness(mux, sm)
 
@@ -76,9 +76,25 @@ func runServer(cmd *cobra.Command, args []string) {
 		Handler: mux,
 	}
 
+	metricsMux := chi.NewRouter()
+	metricsMux.Use(middleware.Logging(c.DisableHealthLog))
+	metricsMux.Handle("/metrics", promhttp.Handler())
+
+	metricsServer := http.Server{
+		Addr:    ":8081",
+		Handler: metricsMux,
+	}
+
 	go func() {
 		slog.Info("starting http server")
 		if err := server.ListenAndServe(); err != http.ErrServerClosed {
+			panic(err)
+		}
+	}()
+
+	go func() {
+		slog.Info("starting metrics server")
+		if err := metricsServer.ListenAndServe(); err != http.ErrServerClosed {
 			panic(err)
 		}
 	}()

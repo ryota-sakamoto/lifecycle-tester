@@ -12,7 +12,6 @@ import (
 func setupTestServer(sm *state.StateManager) *httptest.Server {
 	mux := chi.NewRouter()
 	handler.Index(mux, sm)
-	handler.Metrics(mux, sm)
 	handler.Readiness(mux, sm)
 	handler.Liveness(mux, sm)
 
