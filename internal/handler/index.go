@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"golang.org/x/exp/slog"
 
@@ -25,7 +26,12 @@ type HTTPRequest struct {
 	RemoteAddr string      `json:"remote_addr"`
 }
 
-func GetIndex(sm *state.StateManager) http.HandlerFunc {
+func Index(mux *chi.Mux, sm *state.StateManager) {
+	mux.Get("/", getIndex(sm))
+	mux.Post("/", postIndex(sm))
+}
+
+func getIndex(sm *state.StateManager) http.HandlerFunc {
 	hostname, _ := os.Hostname()
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +53,7 @@ func PickRequest(r *http.Request) HTTPRequest {
 	}
 }
 
-func PostIndex(sm *state.StateManager) http.HandlerFunc {
+func postIndex(sm *state.StateManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var stateReq state.State
 		if err := json.NewDecoder(r.Body).Decode(&stateReq); err != nil {

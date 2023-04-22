@@ -66,10 +66,9 @@ func runServer(cmd *cobra.Command, args []string) {
 	mux := chi.NewRouter()
 	mux.Use(middleware.Logging(c.DisableHealthLog))
 
-	mux.Get("/", handler.GetIndex(sm))
-	mux.Post("/", handler.PostIndex(sm))
-	mux.Get("/readiness", handler.Readiness(sm))
-	mux.Get("/liveness", handler.Liveness(sm))
+	handler.Index(mux, sm)
+	handler.Readiness(mux, sm)
+	handler.Liveness(mux, sm)
 
 	server := http.Server{
 		Addr:    ":8080",
