@@ -2,11 +2,13 @@ package middleware
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"golang.org/x/exp/slog"
 
 	"github.com/ryota-sakamoto/lifecycle-tester/internal/handler"
+	"github.com/ryota-sakamoto/lifecycle-tester/internal/metrics"
 )
 
 type statusResponseWriter struct {
@@ -28,13 +30,13 @@ func Logging(disableHealthLog bool) func(h http.Handler) http.Handler {
 				statusCode:     http.StatusOK,
 			}
 
-			track := handler.TrackHttpConnections()
-			defer track()
+			metrics.HttpConnections.Inc()
+			defer metrics.HttpConnections.Dec()
 
 			h.ServeHTTP(s, r)
 
 			elapsed := time.Since(start)
-			handler.RecordHttpRequestDuration(r.RequestURI, s.statusCode, elapsed)
+			metrics.HttpRequestDuration.WithLabelValues(r.RequestURI, strconv.Itoa(s.statusCode)).Observe(elapsed.Seconds())
 
 			if disableHealthLog && (r.RequestURI == "/readiness" || r.RequestURI == "/liveness") {
 				return
