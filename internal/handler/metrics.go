@@ -31,6 +31,13 @@ var (
 		Name: "liveness_requests_total",
 		Help: "Total number of liveness probe requests",
 	}, []string{"code"})
+
+	httpConnections = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "http_connections",
+			Help: "Number of active HTTP connections",
+		},
+	)
 )
 
 func init() {
@@ -38,6 +45,7 @@ func init() {
 		httpRequestDuration,
 		readinessRequestsTotal,
 		livenessRequestsTotal,
+		httpConnections,
 	)
 
 	readinessRequestsTotal.WithLabelValues("200")
@@ -53,4 +61,11 @@ func Metrics(mux *chi.Mux, sm *state.StateManager) {
 
 func RecordHttpRequestDuration(endpoint string, code int, t time.Duration) {
 	httpRequestDuration.WithLabelValues(endpoint, strconv.Itoa(code)).Observe(t.Seconds())
+}
+
+func TrackHttpConnections() func() {
+	httpConnections.Inc()
+	return func() {
+		httpConnections.Dec()
+	}
 }

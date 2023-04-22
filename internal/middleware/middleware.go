@@ -27,6 +27,10 @@ func Logging(disableHealthLog bool) func(h http.Handler) http.Handler {
 				ResponseWriter: w,
 				statusCode:     http.StatusOK,
 			}
+
+			track := handler.TrackHttpConnections()
+			defer track()
+
 			h.ServeHTTP(s, r)
 
 			elapsed := time.Since(start)
