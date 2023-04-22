@@ -67,6 +67,7 @@ func runServer(cmd *cobra.Command, args []string) {
 	mux.Use(middleware.Logging(c.DisableHealthLog))
 
 	handler.Index(mux, sm)
+	handler.Metrics(mux, sm)
 	handler.Readiness(mux, sm)
 	handler.Liveness(mux, sm)
 

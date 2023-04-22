@@ -14,6 +14,8 @@ func Readiness(mux *chi.Mux, sm *state.StateManager) {
 
 func readiness(sm *state.StateManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		requestsReadinessTotal.Inc()
+
 		if sm.GetState().IsFailedReadiness {
 			w.WriteHeader(http.StatusServiceUnavailable)
 		}
