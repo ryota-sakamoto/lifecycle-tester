@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/prometheus/client_golang/prometheus"
@@ -12,10 +13,11 @@ import (
 )
 
 var (
-	httpRequestsTotal = prometheus.NewCounterVec(
-		prometheus.CounterOpts{
-			Name: "http_requests_total",
-			Help: "Total number of HTTP requests with specific endpoint and status code",
+	httpRequestDuration = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "http_request_duration_seconds",
+			Help:    "Duration of HTTP requests in seconds",
+			Buckets: prometheus.DefBuckets,
 		},
 		[]string{"endpoint", "code"},
 	)
@@ -33,7 +35,7 @@ var (
 
 func init() {
 	prometheus.MustRegister(
-		httpRequestsTotal,
+		httpRequestDuration,
 		readinessRequestsTotal,
 		livenessRequestsTotal,
 	)
@@ -49,6 +51,6 @@ func Metrics(mux *chi.Mux, sm *state.StateManager) {
 	mux.Method(http.MethodGet, "/metrics", promhttp.Handler())
 }
 
-func IncHttpRequestsTotal(endpoint string, code int) {
-	httpRequestsTotal.WithLabelValues(endpoint, strconv.Itoa(code)).Inc()
+func RecordHttpRequestDuration(endpoint string, code int, t time.Duration) {
+	httpRequestDuration.WithLabelValues(endpoint, strconv.Itoa(code)).Observe(t.Seconds())
 }

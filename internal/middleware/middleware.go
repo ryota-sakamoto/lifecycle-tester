@@ -29,29 +29,18 @@ func Logging(disableHealthLog bool) func(h http.Handler) http.Handler {
 			}
 			h.ServeHTTP(s, r)
 
+			elapsed := time.Since(start)
+			handler.RecordHttpRequestDuration(r.RequestURI, s.statusCode, elapsed)
+
 			if disableHealthLog && (r.RequestURI == "/readiness" || r.RequestURI == "/liveness") {
 				return
 			}
 
-			elapsed := time.Since(start)
 			slog.Info("access log",
 				slog.Int("status", s.statusCode),
 				slog.String("elapsed", elapsed.String()),
 				slog.Any("request", handler.PickRequest(r)),
 			)
-		})
-	}
-}
-
-func Metrics() func(h http.Handler) http.Handler {
-	return func(h http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			s := &statusResponseWriter{
-				ResponseWriter: w,
-				statusCode:     http.StatusOK,
-			}
-			h.ServeHTTP(s, r)
-			handler.IncHttpRequestsTotal(r.RequestURI, s.statusCode)
 		})
 	}
 }
