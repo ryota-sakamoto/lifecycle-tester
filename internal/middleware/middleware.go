@@ -42,3 +42,16 @@ func Logging(disableHealthLog bool) func(h http.Handler) http.Handler {
 		})
 	}
 }
+
+func Metrics() func(h http.Handler) http.Handler {
+	return func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			s := &statusResponseWriter{
+				ResponseWriter: w,
+				statusCode:     http.StatusOK,
+			}
+			h.ServeHTTP(s, r)
+			handler.IncHttpRequestsTotal(r.RequestURI, s.statusCode)
+		})
+	}
+}
