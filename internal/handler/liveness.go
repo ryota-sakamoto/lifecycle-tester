@@ -14,10 +14,11 @@ func Liveness(mux *chi.Mux, sm *state.StateManager) {
 
 func liveness(sm *state.StateManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		requestsLivenessTotal.Inc()
-
 		if sm.GetState().IsFailedLiveness {
+			livenessRequestsTotal.WithLabelValues("503").Inc()
 			w.WriteHeader(http.StatusServiceUnavailable)
+		} else {
+			livenessRequestsTotal.WithLabelValues("200").Inc()
 		}
 	}
 }

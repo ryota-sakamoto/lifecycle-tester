@@ -11,22 +11,28 @@ import (
 )
 
 var (
-	requestsReadinessTotal = prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "requests_readiness_total",
+	readinessRequestsTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "readiness_requests_total",
 		Help: "Total number of readiness probe requests",
-	})
+	}, []string{"code"})
 
-	requestsLivenessTotal = prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "requests_liveness_total",
+	livenessRequestsTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "liveness_requests_total",
 		Help: "Total number of liveness probe requests",
-	})
+	}, []string{"code"})
 )
 
 func init() {
 	prometheus.MustRegister(
-		requestsReadinessTotal,
-		requestsLivenessTotal,
+		readinessRequestsTotal,
+		livenessRequestsTotal,
 	)
+
+	readinessRequestsTotal.WithLabelValues("200")
+	readinessRequestsTotal.WithLabelValues("503")
+
+	livenessRequestsTotal.WithLabelValues("200")
+	livenessRequestsTotal.WithLabelValues("503")
 }
 
 func Metrics(mux *chi.Mux, sm *state.StateManager) {
